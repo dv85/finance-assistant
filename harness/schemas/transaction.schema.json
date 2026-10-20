@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "transaction.schema.json",
+  "title": "Finance Transaction",
+  "$comment": "Monthly reporting uses date for ordinary transactions and billingDate only when isInstallment is true.",
+  "type": "object",
+  "required": ["id", "date", "description", "amount", "currency", "direction", "category", "source"],
+  "properties": {
+    "id": { "type": "string" },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Original purchase or bank transaction date."
+    },
+    "billingDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Card billing date; used as the reporting date only for installments."
+    },
+    "isInstallment": {
+      "type": "boolean",
+      "default": false,
+      "description": "True only for a genuine installment portion."
+    },
+    "description": { "type": "string" },
+    "merchant": { "type": "string" },
+    "normalizedMerchantName": { "type": "string", "minLength": 1 },
+    "merchantDescription": { "type": "string", "minLength": 1 },
+    "merchantProfileId": { "type": "string" },
+    "merchantProfileReviewed": { "type": "boolean" },
+    "merchantReviewRequired": { "type": "boolean" },
+    "merchantDescriptionSource": { "enum": ["profile", "category_fallback", "manual"] },
+    "amount": { "type": "number", "minimum": 0 },
+    "currency": { "type": "string" },
+    "direction": { "enum": ["outflow", "inflow"] },
+    "category": { "type": "string" },
+    "account_id": { "type": "string" },
+    "transfer_group_id": { "type": "string" },
+    "evidence_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["type", "confidence"],
+          "properties": {
+            "type": { "enum": ["card_import", "bank_import", "manual", "cash_note", "receipt", "link"] },
+            "confidence": { "enum": ["low", "medium", "high"] },
+            "raw_ref": { "type": "string" }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "isInstallment": { "const": true } },
+        "required": ["isInstallment"]
+      },
+      "then": { "required": ["billingDate"] }
+    }
+  ]
+}

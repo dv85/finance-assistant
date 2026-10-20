@@ -1,0 +1,6 @@
+Date,Description,Amount,Type,Category,Reference
+2025-04-01,Example Payroll,4000.00,income,Income,example-pay
+2025-04-02,Example Market,-45.50,expense,Groceries,example-grocery
+2025-04-03,Example Cafe,-8.00,expense,Dining,example-cafe
+2025-04-04,Example Shop refund,12.00,refund,Shopping,example-refund
+2025-04-05,Transfer to savings,-100.00,transfer,Transfers,example-transfer

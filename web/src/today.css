@@ -1,0 +1,74 @@
+.today-page { --today-gap: 24px; }
+.today-page-heading { margin-bottom: 20px; }
+.today-page-heading p { color: var(--muted); }
+.today-page h2 { font-size: 20px; margin: 0 0 8px; }
+.today-page h3 { font-size: 16px; margin: 0 0 10px; }
+.today-page small { color: var(--muted); font-size: 12px; line-height: 1.55; }
+.today-page .allowance-result { padding: 24px; background: var(--surface); }
+.allowance-result-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.allowance-result h2 { font-size: 15px; font-weight: 600; color: var(--muted); }
+.allowance-amount { font-size: clamp(34px, 4vw, 44px); font-weight: 650; color: var(--ink); line-height: 1.25; font-variant-numeric: tabular-nums; margin: 7px 0; }
+.allowance-amount span { font-size: 14px; color: var(--muted); font-weight: 400; }
+.allowance-result p { margin: 8px 0; }
+.allowance-warning { color: var(--red); }
+.today-month-overview { margin-top: var(--today-gap); padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.today-month-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-top: 14px; }
+.today-month-metrics article { min-width: 0; }
+.today-month-metrics article > span { display: block; color: var(--muted); font-size: 13px; }
+.today-month-metrics strong { display: block; font-size: 25px; font-weight: 650; margin: 5px 0; font-variant-numeric: tabular-nums; }
+.today-month-metrics small { display: block; }
+.today-page .text-link { font-size: 12px; text-underline-offset: 3px; }
+.today-page button.text-link { display: block; border: 0; background: transparent; padding: 0; font: inherit; font-size: 12px; color: var(--teal-dark); text-decoration: underline; cursor: pointer; }
+.today-page button:focus-visible, .today-page a:focus-visible, .today-page input:focus-visible, .today-page select:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 3px; }
+.today-calculation { margin-top: var(--today-gap); }
+.today-page .soft-copy { font-size: 13px; line-height: 1.55; }
+.allowance-equations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 18px; }
+.allowance-equations h3 { border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.today-page dl { margin: 0; }
+.allowance-equation-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; border-bottom: 1px solid var(--line); padding: 12px 0; }
+.allowance-equation-row dt { font-size: 14px; }
+.allowance-equation-row dt small { display: block; margin: 3px 0; }
+.allowance-equation-row dd { margin: 0; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.allowance-equation-row.is-total { font-weight: 650; padding-top: 15px; }
+.allowance-connector { text-align: center; font-size: 12px; color: var(--muted); margin: 16px 0 8px; }
+.allowance-calculation-result { padding: 14px 18px; background: var(--surface-soft); text-align: center; font-size: 14px; border-radius: var(--radius-sm); }
+.today-save-message { font-size: 13px; color: var(--teal-dark); }
+.today-save-message:empty { display: none; }
+.today-next-step { margin-top: var(--today-gap); }
+.today-next-step p { font-size: 14px; margin: 8px 0 14px; }
+.today-supporting { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-top: 20px; margin-top: var(--today-gap); border-top: 1px solid var(--line); }
+.today-supporting section > small { display: block; margin-top: 9px; }
+.today-balance-estimate { min-width: 0; margin-top: var(--today-gap); }
+.today-balance-estimate .legend { justify-content: flex-start; flex-wrap: wrap; gap: 10px 20px; margin: 10px 0; }
+.today-balance-estimate svg { display: block; width: 100%; height: auto; stroke: none; }
+.today-balance-estimate .forecast-label { font-size: 12px; fill: var(--muted); }
+.today-balance-estimate .forecast-baseline { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.today-balance-estimate .forecast-projected { stroke: var(--teal-dark); stroke-width: 2; }
+.today-balance-estimate .forecast-grid { stroke: var(--line); stroke-width: 1; }
+.today-unplanned { display: inline-block; margin-top: 20px; }
+.today-page .allowance-setup { margin-top: 20px; padding: 24px; }
+.allowance-setup .panel-head { flex-wrap: wrap; gap: 12px; }
+.allowance-setup-steps { display: flex; flex-wrap: wrap; gap: 10px 20px; list-style: none; padding: 0; margin: 20px 0 24px; font-size: 12px; color: var(--muted); }
+.allowance-setup-steps li { display: flex; align-items: center; gap: 7px; }
+.allowance-setup-steps li > span { background: var(--surface-soft); padding: 4px 8px; border-radius: 4px; }
+.allowance-setup-steps li[aria-current="step"] { color: var(--ink); font-weight: 650; }
+.allowance-setup-steps li[aria-current="step"] > span { background: var(--teal-dark); color: white; }
+.allowance-setup h2:focus { outline: none; }
+.allowance-setup-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.allowance-source-links { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 12px; }
+.allowance-income-records { list-style: none; padding: 0; margin: 10px 0; }
+.allowance-income-records li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 9px 0; font-size: 13px; }
+.allowance-income-records small { display: block; }
+.allowance-category-list { margin: 18px 0; }
+.allowance-category-field { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.allowance-category-field strong { font-size: 14px; }
+.allowance-category-field small { display: block; margin-top: 4px; }
+.allowance-category-input { display: flex; align-items: center; gap: 8px; }
+.allowance-category-input input { min-width: 0; width: 100%; font: inherit; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.allowance-buffer-field { max-width: 350px; margin: 18px 0; }
+.allowance-draft-total { color: var(--teal-dark); font-size: 13px; margin-top: 14px; }
+.allowance-preview { margin-top: 15px; }
+.today-page [hidden] { display: none !important; }
+@media (max-width: 1150px) { .today-month-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; } }
+@media (max-width: 760px) { .allowance-equations, .today-supporting { grid-template-columns: 1fr; } .today-page .allowance-result, .today-page .allowance-setup { padding: 18px; } .allowance-category-field { grid-template-columns: minmax(0, 1fr) 110px; } .allowance-category-input input, .allowance-buffer-field input { font-size: 16px; } }
+@media (max-width: 380px) { .today-month-metrics { gap: 15px; } .today-month-metrics strong { font-size: 22px; } .allowance-category-field { grid-template-columns: 1fr; gap: 8px; } }

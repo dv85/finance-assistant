@@ -1,0 +1,20 @@
+[
+  {
+    "name": "ordinary purchase",
+    "row": {
+      "date": "2025-04-02",
+      "billingDate": "2025-05-10",
+      "isInstallment": false
+    },
+    "expectedDate": "2025-04-02"
+  },
+  {
+    "name": "explicit installment",
+    "row": {
+      "date": "2025-04-02",
+      "billingDate": "2025-05-10",
+      "isInstallment": true
+    },
+    "expectedDate": "2025-05-10"
+  }
+]

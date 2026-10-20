@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "receipt-evidence.schema.json",
+  "title": "Receipt Evidence",
+  "type": "object",
+  "required": ["id", "captured_at", "source_type", "confidence"],
+  "properties": {
+    "id": { "type": "string" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "source_type": { "enum": ["image", "pdf", "link", "screenshot"] },
+    "file_ref": { "type": "string" },
+    "url": { "type": "string" },
+    "merchant": { "type": "string" },
+    "date": { "type": "string", "format": "date" },
+    "total": { "type": "number" },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "amount": { "type": "number" },
+          "category_hint": { "type": "string" }
+        }
+      }
+    },
+    "confidence": { "enum": ["low", "medium", "high"] },
+    "matched_transaction_id": { "type": "string" }
+  }
+}
+

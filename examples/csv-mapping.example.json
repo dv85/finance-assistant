@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "delimiter": ",",
+  "dateFormat": "%Y-%m-%d",
+  "decimalSeparator": ".",
+  "thousandsSeparator": "",
+  "signConvention": "debit_negative",
+  "columns": {
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "type": "Type",
+    "category": "Category",
+    "reference": "Reference"
+  }
+}

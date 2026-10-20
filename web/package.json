@@ -1,0 +1,39 @@
+{
+  "name": "finance-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "node scripts/local-dev.mjs",
+    "build": "vinext build",
+    "test": "node --test src/**/*.test.js tests/**/*.test.mjs",
+    "typecheck": "npm run types && tsc --noEmit --incremental false",
+    "db:migrate:local": "node scripts/cloudflare.mjs d1 migrations apply DB --local",
+    "types": "node scripts/cloudflare.mjs types .wrangler/types/env.d.ts --env-interface CloudflareEnv"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "drizzle-orm": "0.45.2",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@emnapi/runtime": "^1.10.0",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "react-server-dom-webpack": "19.2.6",
+    "typescript": "5.9.3",
+    "vinext": "1.0.0-beta.2",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module",
+  "license": "GPL-3.0-only"
+}

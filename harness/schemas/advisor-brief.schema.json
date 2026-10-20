@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "advisor-brief.schema.json",
+  "title": "Advisor Brief",
+  "type": "object",
+  "required": ["period", "status", "diagnosis", "actions", "data_gaps"],
+  "properties": {
+    "period": { "type": "string" },
+    "status": { "enum": ["healthy", "watch", "repair", "urgent"] },
+    "safe_daily_spend": { "type": "number" },
+    "projected_end_balance": { "type": "number" },
+    "reconciliation_gap": { "type": "number" },
+    "diagnosis": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "impact", "effort"],
+        "properties": {
+          "title": { "type": "string" },
+          "impact": { "type": "string" },
+          "effort": { "enum": ["low", "medium", "high"] },
+          "due_date": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "data_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+

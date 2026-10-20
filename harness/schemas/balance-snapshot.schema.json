@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "balance-snapshot.schema.json",
+  "title": "Balance Snapshot",
+  "type": "object",
+  "required": ["account_id", "date", "observed_balance", "currency", "source"],
+  "properties": {
+    "account_id": { "type": "string" },
+    "date": { "type": "string", "format": "date" },
+    "observed_balance": { "type": "number" },
+    "currency": { "type": "string" },
+    "pending_total": { "type": "number" },
+    "source": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "enum": ["manual", "statement", "bank_export", "screenshot"] },
+        "raw_ref": { "type": "string" }
+      }
+    }
+  }
+}
+

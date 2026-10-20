@@ -1,0 +1,394 @@
+{
+  "currency": "USD",
+  "month": "2025-04",
+  "openingBalance": 0.0,
+  "bufferTarget": 500.0,
+  "savingsGoal": 0,
+  "accountBalance": null,
+  "income": [
+    {
+      "id": "tx-22cff0dd443abf55bcec630a",
+      "name": "Example Payroll",
+      "amount": 4000.0,
+      "date": "2025-04-02",
+      "paidDate": "2025-04-02",
+      "budgetMonth": "2025-04",
+      "paid": true,
+      "received": true,
+      "source": "Example Payroll",
+      "sourceRef": "synthetic-fixture.csv",
+      "actualDate": "2025-04-02"
+    }
+  ],
+  "incomeHistory": [
+    {
+      "id": "tx-22cff0dd443abf55bcec630a",
+      "name": "Example Payroll",
+      "amount": 4000.0,
+      "date": "2025-04-02",
+      "paidDate": "2025-04-02",
+      "budgetMonth": "2025-04",
+      "paid": true,
+      "received": true,
+      "source": "Example Payroll",
+      "sourceRef": "synthetic-fixture.csv",
+      "actualDate": "2025-04-02"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Housing",
+      "budget": 1200
+    },
+    {
+      "name": "Groceries",
+      "budget": 400
+    },
+    {
+      "name": "Dining",
+      "budget": 150
+    },
+    {
+      "name": "Transport",
+      "budget": 150
+    },
+    {
+      "name": "Shopping",
+      "budget": 150
+    },
+    {
+      "name": "Other",
+      "budget": 100
+    }
+  ],
+  "fixed": [],
+  "debts": [],
+  "subs": [],
+  "evidence": [],
+  "actions": [],
+  "monthlyStatus": [],
+  "transactions": [
+    {
+      "id": "tx-07d9a3f58a669ffbeab8d4ec",
+      "fingerprint": "07d9a3f58a669ffbeab8d4ec244a624ead8c671ff211a56a260cb8800ea2ecd5",
+      "account_id": "card",
+      "date": "2025-04-02",
+      "description": "Example Furniture",
+      "merchant": "Example Furniture",
+      "normalizedMerchantName": "Example Furniture",
+      "merchantDescription": "Shopping transaction; review the statement descriptor.",
+      "merchantProfileReviewed": false,
+      "merchantReviewRequired": true,
+      "merchantDescriptionSource": "category_fallback",
+      "amount": 30.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "type": "expense",
+      "category": "Shopping",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 8",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-plan installment 2 of 2",
+      "isInstallment": true,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z",
+      "billingDate": "2025-06-10",
+      "purchaseAmount": 60.0,
+      "creditTransactionType": "explicit installment",
+      "installmentPlanId": "plan-47700c191ab7770b4fab",
+      "installmentReference": "demo-plan installment 2 of 2",
+      "installmentNumber": 2,
+      "installmentCount": 2
+    },
+    {
+      "id": "tx-1934966b46d88f67f18b38f1",
+      "fingerprint": "1934966b46d88f67f18b38f14872b5dd62121db98d99d688cb93f777f3918937",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Market",
+      "merchant": "Example Market",
+      "normalizedMerchantName": "Example Market",
+      "merchantDescription": "Groceries transaction; review the statement descriptor.",
+      "merchantProfileReviewed": true,
+      "merchantReviewRequired": false,
+      "merchantDescriptionSource": "manual",
+      "amount": 25.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "type": "expense",
+      "category": "Groceries",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 2",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-market",
+      "isInstallment": false,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "tx-22cff0dd443abf55bcec630a",
+      "fingerprint": "22cff0dd443abf55bcec630a2d35552e05a32b6c583b612b43a2110d5dc108b3",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Payroll",
+      "merchant": "Example Payroll",
+      "normalizedMerchantName": "Example Payroll",
+      "merchantDescription": "Income transaction; review the statement descriptor.",
+      "merchantProfileReviewed": false,
+      "merchantReviewRequired": true,
+      "merchantDescriptionSource": "category_fallback",
+      "amount": 4000.0,
+      "currency": "USD",
+      "direction": "inflow",
+      "type": "income",
+      "category": "Income",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 4",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-income",
+      "isInstallment": false,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "tx-2c43270bee59a07d5549b582",
+      "fingerprint": "2c43270bee59a07d5549b5820728622b836cdcadaf379dc0911afa2d0c860edb",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Market",
+      "merchant": "Example Market",
+      "normalizedMerchantName": "Example Market",
+      "merchantDescription": "Groceries transaction; review the statement descriptor.",
+      "merchantProfileReviewed": true,
+      "merchantReviewRequired": false,
+      "merchantDescriptionSource": "manual",
+      "amount": 5.0,
+      "currency": "USD",
+      "direction": "inflow",
+      "type": "refund",
+      "category": "Groceries",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 3",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-refund",
+      "isInstallment": false,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "tx-39f5d064229a8b8163348b4c",
+      "fingerprint": "39f5d064229a8b8163348b4c6fb594e37db4f98259412c2a209f0dabe01e91aa",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Card statement payment",
+      "merchant": "Card statement payment",
+      "normalizedMerchantName": "Card statement payment",
+      "merchantDescription": "Transfers transaction; review the statement descriptor.",
+      "merchantProfileReviewed": false,
+      "merchantReviewRequired": true,
+      "merchantDescriptionSource": "category_fallback",
+      "amount": 50.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "type": "card_settlement",
+      "category": "Transfers",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 6",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-settlement",
+      "isInstallment": false,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "tx-ac9602944c3561de5f73f1a8",
+      "fingerprint": "ac9602944c3561de5f73f1a8aef0c1c71b9b97b2df68b8f384f91a701b65ace0",
+      "account_id": "card",
+      "date": "2025-04-02",
+      "description": "Example Furniture",
+      "merchant": "Example Furniture",
+      "normalizedMerchantName": "Example Furniture",
+      "merchantDescription": "Shopping transaction; review the statement descriptor.",
+      "merchantProfileReviewed": false,
+      "merchantReviewRequired": true,
+      "merchantDescriptionSource": "category_fallback",
+      "amount": 30.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "type": "expense",
+      "category": "Shopping",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 7",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-plan installment 1 of 2",
+      "isInstallment": true,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z",
+      "billingDate": "2025-05-10",
+      "purchaseAmount": 60.0,
+      "creditTransactionType": "explicit installment",
+      "installmentPlanId": "plan-47700c191ab7770b4fab",
+      "installmentReference": "demo-plan installment 1 of 2",
+      "installmentNumber": 1,
+      "installmentCount": 2
+    },
+    {
+      "id": "tx-b3f102870b2fb939dcce8f8f",
+      "fingerprint": "b3f102870b2fb939dcce8f8f52ee3d9a8a59ef1dccfc3b5113b4b78544437218",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Transfer to savings",
+      "merchant": "Transfer to savings",
+      "normalizedMerchantName": "Transfer to savings",
+      "merchantDescription": "Transfers transaction; review the statement descriptor.",
+      "merchantProfileReviewed": false,
+      "merchantReviewRequired": true,
+      "merchantDescriptionSource": "category_fallback",
+      "amount": 100.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "type": "transfer",
+      "category": "Transfers",
+      "categoryReviewed": true,
+      "source": "synthetic-fixture.csv",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 5",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "reference": "demo-transfer",
+      "isInstallment": false,
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    }
+  ],
+  "cardAllocations": [],
+  "cashMovements": [
+    {
+      "id": "cash-tx-1934966b46d88f67f18b38f1",
+      "fingerprint": "1934966b46d88f67f18b38f14872b5dd62121db98d99d688cb93f777f3918937",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Market",
+      "amount": 25.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "movementType": "direct_expense",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 2",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "cash-tx-22cff0dd443abf55bcec630a",
+      "fingerprint": "22cff0dd443abf55bcec630a2d35552e05a32b6c583b612b43a2110d5dc108b3",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Payroll",
+      "amount": 4000.0,
+      "currency": "USD",
+      "direction": "inflow",
+      "movementType": "bank_credit",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 4",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "cash-tx-2c43270bee59a07d5549b582",
+      "fingerprint": "2c43270bee59a07d5549b5820728622b836cdcadaf379dc0911afa2d0c860edb",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Example Market",
+      "amount": 5.0,
+      "currency": "USD",
+      "direction": "inflow",
+      "movementType": "direct_expense",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 3",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "cash-tx-39f5d064229a8b8163348b4c",
+      "fingerprint": "39f5d064229a8b8163348b4c6fb594e37db4f98259412c2a209f0dabe01e91aa",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Card statement payment",
+      "amount": 50.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "movementType": "card_settlement",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 6",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    },
+    {
+      "id": "cash-tx-b3f102870b2fb939dcce8f8f",
+      "fingerprint": "b3f102870b2fb939dcce8f8f52ee3d9a8a59ef1dccfc3b5113b4b78544437218",
+      "account_id": "checking",
+      "date": "2025-04-02",
+      "description": "Transfer to savings",
+      "amount": 100.0,
+      "currency": "USD",
+      "direction": "outflow",
+      "movementType": "transfer",
+      "sourceRefs": [
+        {
+          "label": "synthetic-fixture.csv: row 5",
+          "firstSeenAt": "2025-04-01T00:00:00Z"
+        }
+      ],
+      "createdAt": "2025-04-01T00:00:00Z",
+      "updatedAt": "2025-04-01T00:00:00Z"
+    }
+  ]
+}

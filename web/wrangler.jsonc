@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "finance-assistant-open-source-local",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-05-22",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "finance-assistant-open-source-local",
+      "database_id": "00000000-0000-4000-8000-000000000001",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

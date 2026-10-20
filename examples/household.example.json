@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "currency": "USD",
+  "accounts": [
+    {
+      "id": "checking",
+      "name": "Checking account",
+      "type": "bank_account"
+    },
+    {
+      "id": "card",
+      "name": "Household card",
+      "type": "credit_card"
+    }
+  ],
+  "openingBalance": 0,
+  "bufferTarget": 500,
+  "balance": null,
+  "categories": [
+    {
+      "name": "Housing",
+      "budget": 1200
+    },
+    {
+      "name": "Groceries",
+      "budget": 400
+    },
+    {
+      "name": "Dining",
+      "budget": 150
+    },
+    {
+      "name": "Transport",
+      "budget": 150
+    },
+    {
+      "name": "Shopping",
+      "budget": 150
+    },
+    {
+      "name": "Other",
+      "budget": 100
+    }
+  ],
+  "rules": [
+    {
+      "contains": "Example Market",
+      "category": "Groceries",
+      "merchant": "Example Market"
+    },
+    {
+      "contains": "Example Cafe",
+      "category": "Dining",
+      "merchant": "Example Cafe"
+    },
+    {
+      "contains": "Transfer to savings",
+      "type": "transfer",
+      "category": "Transfers"
+    },
+    {
+      "contains": "Card statement payment",
+      "type": "card_settlement",
+      "category": "Transfers"
+    }
+  ],
+  "recurringCosts": []
+}

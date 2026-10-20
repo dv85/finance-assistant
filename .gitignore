@@ -1,0 +1,39 @@
+# Private household state and evidence
+/config/
+/memory/
+/outputs/
+/Finance Imports/
+/release/
+/validation/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.*
+secrets.*
+cookies*.json
+*session*.json
+*.sqlite
+*.sqlite3
+*.db
+
+# Local runtimes and generated artifacts
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+.wrangler/
+.next/
+.vinext/
+dist/
+.playwright-cli/
+output/
+*.log
+.DS_Store
+.idea/
+.vscode/

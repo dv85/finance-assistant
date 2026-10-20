@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-backup.schema.json",
+  "title": "Cashflow Repair Assistant App Backup",
+  "$comment": "Monthly reporting uses transaction date for ordinary purchases and billingDate only for rows marked isInstallment.",
+  "type": "object",
+  "required": [
+    "currency",
+    "month",
+    "openingBalance",
+    "bufferTarget",
+    "savingsGoal",
+    "income",
+    "fixed",
+    "debts",
+    "subs",
+    "categories",
+    "transactions",
+    "cardAllocations",
+    "cashMovements",
+    "cashReconciliation",
+    "sourceManifest",
+    "evidence",
+    "actions"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "currency": { "type": "string", "minLength": 1 },
+    "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+    "openingBalance": { "type": "number" },
+    "bufferTarget": { "type": "number", "minimum": 0 },
+    "savingsGoal": { "type": "number", "minimum": 0 },
+    "accountBalance": { "$ref": "#/$defs/accountBalance" },
+    "income": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/incomeItem" }
+    },
+    "fixed": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/fixedItem" }
+    },
+    "debts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/debtItem" }
+    },
+    "subs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/subscriptionItem" }
+    },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/categoryItem" }
+    },
+    "transactions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/appTransaction" }
+    },
+    "cardAllocations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cardAllocation" }
+    },
+    "cashMovements": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cashMovement" }
+    },
+    "cashReconciliation": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cashReconciliation" }
+    },
+    "sourceManifest": { "$ref": "#/$defs/sourceManifest" },
+    "cardImportSummary": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidenceItem" }
+    },
+    "monthlyStatus": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/monthlyStatusItem" }
+    },
+    "actions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/actionItem" }
+    }
+  },
+  "$defs": {
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "day": { "type": "integer", "minimum": 1, "maximum": 31 },
+    "incomeItem": {
+      "type": "object",
+      "required": ["source", "who", "amount", "day"],
+      "additionalProperties": true,
+      "properties": {
+        "source": { "type": "string" },
+        "who": { "type": "string" },
+        "amount": { "type": "number" },
+        "day": { "$ref": "#/$defs/day" }
+      }
+    },
+    "fixedItem": {
+      "type": "object",
+      "required": ["name", "amount", "dueDay"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "amount": { "type": "number" },
+        "dueDay": { "$ref": "#/$defs/day" }
+      }
+    },
+    "debtItem": {
+      "type": "object",
+      "required": ["name", "balance", "payment", "apr"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "balance": { "type": "number" },
+        "payment": { "type": "number", "minimum": 0 },
+        "apr": { "type": "number", "minimum": 0 }
+      }
+    },
+    "subscriptionItem": {
+      "type": "object",
+      "required": ["name", "amount", "day"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "amount": { "type": "number", "minimum": 0 },
+        "day": { "$ref": "#/$defs/day" }
+      }
+    },
+    "categoryItem": {
+      "type": "object",
+      "required": ["name", "budget"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "budget": { "type": "number", "minimum": 0 }
+      }
+    },
+    "appTransaction": {
+      "type": "object",
+      "required": ["id", "date", "description", "normalizedMerchantName", "merchantDescription", "merchantProfileReviewed", "merchantReviewRequired", "merchantDescriptionSource", "category", "amount"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "date": {
+          "$ref": "#/$defs/date",
+          "description": "Original purchase or bank transaction date."
+        },
+        "billingDate": {
+          "$ref": "#/$defs/date",
+          "description": "Reporting date only when isInstallment is true."
+        },
+        "isInstallment": {
+          "type": "boolean",
+          "default": false
+        },
+        "purchaseAmount": { "type": "number" },
+        "originalCurrency": { "type": "string" },
+        "isPending": { "type": "boolean", "default": false },
+        "amountEstimated": { "type": "boolean", "default": false },
+        "estimatedFxRate": { "type": ["number", "null"] },
+        "estimationMethod": { "type": ["string", "null"] },
+        "description": { "type": "string" },
+        "merchant": { "type": "string" },
+        "normalizedMerchantName": { "type": "string", "minLength": 1 },
+        "merchantDescription": { "type": "string", "minLength": 1 },
+        "merchantProfileId": { "type": "string" },
+        "merchantProfileReviewed": { "type": "boolean" },
+        "merchantReviewRequired": { "type": "boolean" },
+        "merchantDescriptionSource": { "enum": ["profile", "category_fallback", "manual"] },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "source": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "isInstallment": { "const": true } },
+            "required": ["isInstallment"]
+          },
+          "then": { "required": ["billingDate"] }
+        }
+      ]
+    },
+    "accountBalance": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "properties": {
+        "date": { "$ref": "#/$defs/date" },
+        "amount": { "type": "number" },
+        "source": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "cardAllocation": {
+      "type": "object",
+      "required": ["id", "card", "purchaseDate", "billingDate", "merchant", "normalizedMerchantName", "merchantDescription", "merchantProfileReviewed", "merchantReviewRequired", "merchantDescriptionSource", "category", "amount", "source"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "transactionId": { "type": "string" },
+        "card": { "type": "string" },
+        "purchaseDate": { "$ref": "#/$defs/date" },
+        "billingDate": { "$ref": "#/$defs/date" },
+        "merchant": { "type": "string" },
+        "normalizedMerchantName": { "type": "string", "minLength": 1 },
+        "merchantDescription": { "type": "string", "minLength": 1 },
+        "merchantProfileId": { "type": "string" },
+        "merchantProfileReviewed": { "type": "boolean" },
+        "merchantReviewRequired": { "type": "boolean" },
+        "merchantDescriptionSource": { "enum": ["profile", "category_fallback", "manual"] },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "purchaseAmount": { "type": "number" },
+        "originalCurrency": { "type": "string" },
+        "reference": { "type": "string" },
+        "isInstallment": { "type": "boolean", "default": false },
+        "isPending": { "type": "boolean", "default": false },
+        "amountEstimated": { "type": "boolean", "default": false },
+        "estimatedFxRate": { "type": ["number", "null"] },
+        "estimationMethod": { "type": ["string", "null"] },
+        "source": { "type": "string" }
+      }
+    },
+    "cashMovement": {
+      "type": "object",
+      "required": ["id", "fingerprint", "account_id", "date", "description", "amount", "currency", "direction", "movementType", "sourceRefs"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "fingerprint": { "type": "string" },
+        "account_id": { "type": "string" },
+        "date": { "$ref": "#/$defs/date" },
+        "description": { "type": "string" },
+        "amount": { "type": "number", "exclusiveMinimum": 0 },
+        "currency": { "type": "string" },
+        "direction": { "enum": ["inflow", "outflow"] },
+        "movementType": { "type": "string" },
+        "sourceRefs": { "type": "array", "minItems": 1 }
+      }
+    },
+    "cashReconciliation": {
+      "type": "object",
+      "required": ["account_id", "month", "fromDate", "throughDate", "openingBalance", "inflows", "outflows", "expectedBalance", "observedBalance", "gap", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "account_id": { "type": "string" }, "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+        "fromDate": { "$ref": "#/$defs/date" }, "throughDate": { "$ref": "#/$defs/date" },
+        "openingBalance": { "type": "number" }, "inflows": { "type": "number" }, "outflows": { "type": "number" },
+        "expectedBalance": { "type": "number" }, "observedBalance": { "type": "number" }, "gap": { "type": "number" },
+        "completeEvidence": { "type": "boolean" }, "status": { "enum": ["pass", "warn", "fail"] }
+      }
+    },
+    "sourceManifest": {
+      "type": "object",
+      "required": ["version", "manifestHash", "rulesHash", "parserHash", "files", "identityValid", "blockers"],
+      "additionalProperties": false,
+      "properties": {
+        "version": { "const": 2 }, "manifestHash": { "type": "string" }, "rulesHash": { "type": "string" }, "parserHash": { "type": "string" },
+        "identityValid": { "type": "boolean" }, "blockers": { "type": "array", "items": { "type": "string" } },
+        "files": { "type": "array", "items": { "type": "object", "required": ["file", "checksum", "parser", "rawRows", "acceptedRows", "duplicateRows", "skippedRowsByReason", "invalidRows", "accountedRows", "identityValid", "amountTotals"] } }
+      }
+    },
+    "evidenceItem": {
+      "type": "object",
+      "required": ["id", "date", "type", "note", "amount", "source"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "$ref": "#/$defs/date" },
+        "type": {
+          "enum": [
+            "cash_note",
+            "receipt_link",
+            "receipt_image",
+            "wire_transfer",
+            "balance_snapshot",
+            "import_note"
+          ]
+        },
+        "note": { "type": "string" },
+        "amount": { "type": "number" },
+        "source": { "type": "string" }
+      }
+    },
+    "monthlyStatusItem": {
+      "type": "object",
+      "required": ["month", "income", "expenses", "net", "topCategory", "transactionCount", "evidenceCount"],
+      "additionalProperties": true,
+      "properties": {
+        "month": { "type": "string", "pattern": "^\\d{4}-\\d{2}$" },
+        "income": { "type": "number" },
+        "expenses": { "type": "number" },
+        "net": { "type": "number" },
+        "closingBalance": { "type": ["number", "null"] },
+        "topCategory": { "type": "string" },
+        "transactionCount": { "type": "integer", "minimum": 0 },
+        "evidenceCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "actionItem": {
+      "type": "object",
+      "required": ["id", "title", "detail", "impact", "done"],
+      "additionalProperties": true,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "detail": { "type": "string" },
+        "impact": { "enum": ["Low", "Medium", "High"] },
+        "done": { "type": "boolean" }
+      }
+    }
+  }
+}
