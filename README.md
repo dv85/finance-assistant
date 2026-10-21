@@ -45,6 +45,8 @@ Use a separate fresh copy of the source for real data, then repeat the installat
 - Set category budgets, the protected buffer, and optional matching rules.
 - Supply an observed balance with its date and account id if you want balance-based estimates. Without one, treat the allowance as incomplete until you provide a balance.
 
+The configured balance account selects which account feeds the allowance. Only that account's observations are considered; a newer observation from another bank or card cannot replace it. With one bank account, its imported balances are selected automatically. With multiple bank accounts, configure `balance.accountId` explicitly. A corrected configured amount on the same date replaces the previous value; a newer observation for the selected account still takes precedence.
+
 Rules run in file order; the first matching `contains` rule supplies defaults for type, category, and readable merchant name. Explicit CSV type/category columns take priority. Account ids and base currency must remain stable once you have transactions. Currency changes do not convert money and are rejected for an existing ledger.
 
 The CSV examples use fixed historical dates so they remain reproducible. Select their month in the dashboard; your own exports retain their actual dates.
@@ -91,6 +93,8 @@ Codex must follow `AGENTS.md`. Reusable procedures live in [the workflow guide](
 The local server binds to loopback. The local owner identity is enabled only by `npm run dev`; production builds fail closed. Do not expose the development server through a tunnel or shared network. Files and the local database are not encrypted by this app; use your operating system's access controls and disk encryption.
 
 Use Settings → Data & backup to export or restore dashboard edits. This does not replace the ledger. Keep separate private backups of `memory/`, `config/`, and your source files as well. The `web/.wrangler/` directory contains the local serving database and must stay private.
+
+Restore accepts complete `cashflow-repair-shared-state/v5` exports. Unsupported versions, unrelated JSON, and missing sections are rejected before changing dashboard data.
 
 ## Validation
 

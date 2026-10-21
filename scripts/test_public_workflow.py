@@ -126,6 +126,52 @@ class ImportTests(unittest.TestCase):
         prepare_import(ledger, self.config, [self.raw()], {"errors": []}, "checking", "a")
         self.assertEqual(ledger, before)
 
+    def test_balance_uses_selected_account_and_never_another_accounts_latest_value(self):
+        self.config["accounts"].append({"id": "savings", "name": "Synthetic savings", "type": "bank_account", "currency": "USD"})
+        self.config["balance"] = {"accountId": "checking", "date": "2025-04-02", "amount": 1000}
+        ledger = empty_ledger(self.config)
+        ledger["balanceSnapshots"] = [
+            {"account_id": "checking", "date": "2025-04-01", "observed_balance": 1100},
+            {"account_id": "savings", "date": "2025-04-04", "observed_balance": 9000},
+            {"account_id": "card", "date": "2025-04-05", "observed_balance": 5000},
+        ]
+        self.assertEqual(to_app_state(ledger, self.config)["accountBalance"], {"date": "2025-04-02", "amount": 1000})
+        ledger["balanceSnapshots"].append({"account_id": "checking", "date": "2025-04-03", "observed_balance": 950})
+        self.assertEqual(to_app_state(ledger, self.config)["accountBalance"], {"date": "2025-04-03", "amount": 950})
+        self.config["balance"] = None
+        self.assertIsNone(to_app_state(ledger, self.config)["accountBalance"])
+        self.config["accounts"] = [row for row in self.config["accounts"] if row["id"] != "savings"]
+        self.assertEqual(to_app_state(ledger, self.config)["accountBalance"]["amount"], 950)
+
+    def test_same_date_balance_correction_is_applied_and_remains_idempotent(self):
+        self.config["balance"] = {"accountId": "checking", "date": "2025-04-02", "amount": 1000}
+        ledger, _ = prepare_import(empty_ledger(self.config), self.config, [self.raw()], {"errors": []}, "checking", "a")
+        self.config["balance"]["amount"] = 900
+        corrected, report = prepare_import(ledger, self.config, [self.raw()], {"errors": []}, "checking", "a")
+        self.assertEqual(report["status"], "pass")
+        self.assertEqual(corrected["balanceSnapshots"][0]["observed_balance"], 900)
+        self.assertEqual(ledger["balanceSnapshots"][0]["observed_balance"], 1000)
+        self.assertEqual(to_app_state(corrected, self.config)["accountBalance"]["amount"], 900)
+        repeated, _ = prepare_import(corrected, self.config, [self.raw()], {"errors": []}, "checking", "a")
+        self.assertEqual(repeated, corrected)
+
+    def test_distinct_numbered_purchases_split_even_if_their_old_plan_id_was_merged(self):
+        from installment_plans import enrich_installment_plans
+        rows = [self.raw(account="card", reference=reference, description="Example Store", signedAmount=-50,
+                         purchaseAmount=100, isInstallment=True, installmentNumber=number, installmentCount=2,
+                         billingDate=f"2025-{number + 4:02d}-10", sourceRow=index + 2)
+                for index, (reference, number) in enumerate([(ref, n) for ref in ["purchase-alpha", "purchase-beta"] for n in [1, 2]])]
+        ledger, report = prepare_import(empty_ledger(self.config), self.config, rows, {"errors": []}, None, "a")
+        self.assertEqual(report["status"], "pass")
+        self.assertEqual(len(ledger["installmentPlans"]), 2)
+        self.assertEqual({plan["reference"] for plan in ledger["installmentPlans"]}, {"purchase-alpha", "purchase-beta"})
+        for tx in ledger["transactions"]:
+            tx["installmentPlanId"] = "legacy-merged-plan"
+        enrich_installment_plans(ledger)
+        self.assertEqual(len({tx["installmentPlanId"] for tx in ledger["transactions"]}), 2)
+        self.assertEqual(sum(plan["purchaseAmount"] for plan in ledger["installmentPlans"]), 200)
+        self.assertTrue(all(plan["status"] == "ready" for plan in ledger["installmentPlans"]))
+
     def test_israeli_bank_xlsx_balances(self):
         from openpyxl import Workbook
         workbook = Workbook(); sheet = workbook.active

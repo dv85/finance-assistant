@@ -71,7 +71,9 @@ def enrich_installment_plans(ledger):
         tx["creditTransactionType"] = tx.get("creditTransactionType") or alloc.get("creditTransactionType") or ""
         reference = str(tx.get("reference") or alloc.get("reference") or "").strip()
         ordinal = ORDINAL.search(reference)
-        stable_ref = "" if ordinal or reference == "0" else reference
+        stable_ref = ORDINAL.sub("", reference).strip()
+        if stable_ref == "0":
+            stable_ref = ""
         account = tx.get("account_id") or tx.get("accountId") or f"card-{alloc.get('card', '')}"
         total = cents(tx.get("purchaseAmount") or alloc.get("purchaseAmount"))
         key = (account, tx["date"], tx.get("merchantProfileId") or tx.get("merchant") or tx.get("description"), total)
@@ -111,8 +113,9 @@ def enrich_installment_plans(ledger):
             if len(counts) > 1 or not total or not count or not 1 <= count <= 120:
                 warning = warning or ("Conflicting installment counts in source exports" if len(counts) > 1 else "Purchase total missing from source export" if not total else "Credit installments: export does not state the payment count or financing schedule; actual billed payments are shown" if kind == "credit" else "Payment count not stated and cannot be reliably inferred from the available payments")
             plan_key = json.dumps([*key, ref], ensure_ascii=False)
-            prior_ids = {r[0].get("installmentPlanId") for r in records if r[0].get("installmentPlanId")}
-            plan_id = next(iter(prior_ids)) if len(prior_ids) == 1 else "plan-" + hashlib.sha256(plan_key.encode()).hexdigest()[:20]
+            # Recompute derived IDs so previously merged plans split correctly
+            # when their distinct purchase references are recovered.
+            plan_id = "plan-" + hashlib.sha256(plan_key.encode()).hexdigest()[:20]
             plan = {"id": plan_id, "purchaseDate": key[1], "purchaseAmount": total / 100,
                     "accountId": key[0], "reference": ref, "merchant": records[0][0].get("normalizedMerchantName") or records[0][0].get("merchant"),
                     "category": records[0][0].get("category"), "installmentCount": count,

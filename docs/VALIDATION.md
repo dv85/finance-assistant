@@ -1,73 +1,40 @@
-# Release validation — 2026-10-20
+# Release validation — 2026-10-21
 
-Validated on macOS arm64 with Python 3.12.14 and Node.js 24.13.0. All operating data used for the final validation was synthetic.
+Validated with fabricated data on macOS arm64, Python 3.12.14 and Node.js 24.13.0. Linux, Windows and hosted deployment remain unverified.
 
-## Installation and automated checks
+## Review fixes
 
-A fresh temporary source export was populated only from `PUBLIC_FILES.json`, with no parent workspace files, virtualenv, node_modules, database, credentials, or ledger copied into it. New Python and npm installations succeeded:
+- Backup restore requires a complete supported v5 export. Unknown versions, unrelated JSON, missing sections and malformed containers fail before any replacement write. Complete empty exports and nullable defaults remain supported.
+- Allowance balances use the configured account, or the only bank account when selection is unambiguous. Other bank/card observations cannot silently replace it. Same-date configuration corrections are applied idempotently.
+- Installment grouping retains purchase references after removing ordinal text. Derived plan IDs are regenerated so previously merged purchases split correctly. Python-to-JavaScript tests preserve both purchases and their totals.
 
-```bash
-python3.12 -m venv .venv
-.venv/bin/python -m pip install -r requirements-dev.txt
-cd web
-npm ci --no-audit --no-fund
-cd ..
-.venv/bin/python scripts/setup_local.py --demo
-.venv/bin/python scripts/run_integrity_harness.py --full
-```
+## Dependencies
 
-The frozen final source was also revalidated in that isolated installation. Results:
+The pinned stack uses React 19.3.1, Vinext 1.3.0, Vite 8.3.5, Cloudflare Vite plugin 1.64.0 and Wrangler 4.151.3. Unused drizzle-kit and the explicit emnapi runtime dependency were removed. Patched transitive versions are pinned in npm overrides.
 
-| Check | Result |
-| --- | --- |
-| Python unittest discovery | 23 passed |
-| `npm test` | 34 passed |
-| `npm run typecheck` | Passed |
-| `npm run build` | Passed |
-| Ledger schema, identities, derived state, snapshot reconciliation | Passed |
-| New migration produces 17 empty application tables | Passed |
-| Public manifest rejects private paths, traversal, missing files, and symlinks | Passed |
+The unpatched braces dependency is removed through a project-owned tinyglobby adapter for the build tool's single fast-glob call. Normal matching and excessive nesting have regression tests. See THIRD_PARTY_NOTICES.md for the override rationale and maintenance boundary. The dependency license inventory was refreshed from the final lockfile.
 
-Tests cover malformed CSV, explicit date/amount conventions, account/currency mismatches, duplicate imports, identical unreferenced purchases, refunds, transfers, card settlements, explicit installments, missing installment counts, XLSX running-balance reconciliation, stale previews, setup preservation, and release scope.
+A fresh `npm audit --json` reports zero vulnerabilities across all severities. No audit rules were suppressed. This records the registry result at validation time, rather than a guarantee about future advisories.
 
-Additional regressions verify that received income is counted once, refunds reduce category spending, and missing historical closing balances are distinguished from observed zero balances.
+## Automated validation
 
-## Local end-to-end checks
+The source-only allowlist was copied into a fresh temporary directory without the original ledger, configuration, database, credentials, virtual environment or node_modules. Pinned Python installation and a clean npm installation succeeded.
 
-The documented preview/review/apply sequence succeeded for the synthetic CSV example. After a passing full integrity run:
+- Python unittest discovery: 26 passed.
+- JavaScript tests: 40 passed, none skipped.
+- TypeScript checking and production build: passed.
+- Full integrity harness: passed in the source checkout and isolated installation.
+- New migration: 17 empty application tables.
+- Local snapshot: activated with matching source hash, entity counts and transaction amount.
+- HTTP regression checks: 43 passed, including rejection of unrelated/partial backups without loss of edits, valid backup restoration, nullable defaults, untrusted request rejection, staging reconciliation failure and rollback.
+- Browser smoke check: dashboard and budget views load with synthetic data.
 
-```bash
-cd web
-npm run db:migrate:local
-npm run dev
-```
+Build tooling emits source-map warnings; they do not prevent the checks or production build from passing. Hosted authentication is deliberately unsupported by this local release.
 
-In another terminal, from the root:
+## Privacy and packaging
 
-```bash
-.venv/bin/python scripts/sync_local_ledger.py
-```
+Only the explicitly reviewed PUBLIC_FILES.json allowlist is packaged. The additions are the backup envelope validator and tests, plus the project-owned glob adapter and tests. Runtime data, local databases, reports, logs, screenshots, credentials, installed dependencies and Git metadata remain excluded.
 
-The local snapshot activated and its source hash, all entity counts, and aggregate transaction amount matched the bundle. A deliberately mismatched staging commit was rejected without changing the prior active snapshot, and staging cleanup succeeded.
+Dedicated secret scanning uses the previously checksum-verified Gitleaks 8.30.1 executable with full redaction and default rules. Source files, the extracted final archive and committed history are scanned locally. The final digest and scan results are recorded outside the publication set.
 
-Fourteen local HTTP checks passed, covering served periods, reconciliation, staging rejection, budget edits, base-currency cash reports, backup/restore including nullable settings, cross-origin spoof rejection, and preservation of dashboard edits through snapshot replacement. No production service or credential was used.
-
-## Browser checks
-
-Playwright verified the local dashboard, selected the historical imported period, and inspected desktop and 390 × 844 mobile layouts. No horizontal overflow or mismatched currency label was found. Missing historical balance evidence is displayed as unavailable. The final page load produced no application console errors. Local screenshots contain synthetic data and are excluded from the source archive.
-
-## Privacy and release scope
-
-The source migration was manually reviewed and historical household seed rows were removed. A regression now requires an empty fresh database, and the public audit rejects data-changing statements in release SQL. Private records, source exports, reports, screenshots, hosting configuration, Git history, dependency installations, and local databases are absent from the public allowlist.
-
-The release uses the full GNU GPL version 3 text and `GPL-3.0-only` package metadata. Third-party license metadata is retained separately. Only a reviewed source allowlist is packaged; the full working directory must never be archived for publication after adding household data.
-
-Dedicated scanning uses the temporary, checksum-verified Gitleaks 8.30.1 executable with full redaction, default rules, no suppression annotations, and local-only processing. The final archive and its extracted source are scanned after packaging; the accompanying release receipt records the final digest and scan results.
-
-## Limits of validation
-
-- macOS arm64 was exercised. Linux and Windows were not exercised in this run.
-- Hosted authentication/deployment is deliberately outside the supported local release and was not validated.
-- Vinext is pinned to a beta version; runtime upgrades require repeating these checks.
-- Dependency metadata is an inventory, not a determination of every downstream redistribution's obligations.
-- No Git commit, GitHub repository creation, push, or visibility change is part of preparation.
+The project remains GPL-3.0-only. This verification does not authorize a public release or a visibility change.

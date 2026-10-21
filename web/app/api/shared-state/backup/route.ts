@@ -2,12 +2,13 @@ import { getDb } from "../../../../db";
 import { requireApiUser } from "../../../server/access";
 import { baseCurrency, cleanText, finiteMoney, parseRequestJson, readSharedState, validDate, validMonth, type CashCurrency } from "../../../server/shared-state";
 import { validateBindings, validateCatalog } from "../budget-plan/route";
+import { BACKUP_VERSION, backupState } from "../../../../src/lib/backup.js";
 
 export async function GET() {
   const access = await requireApiUser();
   if (access instanceof Response) return access;
   return Response.json({
-    schemaVersion: "cashflow-repair-shared-state/v5",
+    schemaVersion: BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
     product: "Cashflow Repair",
     sharedState: await readSharedState(),
@@ -19,17 +20,17 @@ export async function POST(request: Request) {
   if (access instanceof Response) return access;
   const body = await parseRequestJson(request);
   if (body instanceof Response) return body;
-  const candidate = (body.sharedState || body.appMemory || body) as Record<string, unknown>;
-  const settingsSource = (candidate.settings || {}) as Record<string, unknown>;
-  const legacyState = body.state && typeof body.state === "object" ? body.state as Record<string, unknown> : {};
+  const candidate = backupState(body) as Record<string, unknown> | null;
+  if (!candidate) return Response.json({ error: "Choose a complete supported dashboard backup export. Existing data was preserved." }, { status: 400 });
+  const settingsSource = candidate.settings as Record<string, unknown>;
   const householdCurrency = await baseCurrency();
-  const rawCurrency = settingsSource.currency ?? legacyState.currency;
+  const rawCurrency = settingsSource.currency;
   const currency = rawCurrency == null ? null : cleanText(rawCurrency, 3);
   if (rawCurrency != null && currency !== householdCurrency) return Response.json({ error: "Backup currency is unsupported." }, { status: 400 });
-  const rawOpeningBalance = settingsSource.openingBalance ?? legacyState.openingBalance;
+  const rawOpeningBalance = settingsSource.openingBalance;
   const openingBalance = rawOpeningBalance == null ? null : finiteMoney(rawOpeningBalance, -1_000_000_000);
   if (rawOpeningBalance != null && openingBalance === null) return Response.json({ error: "Backup contains an invalid opening balance." }, { status: 400 });
-  const rawBufferTarget = settingsSource.bufferTarget ?? legacyState.bufferTarget;
+  const rawBufferTarget = settingsSource.bufferTarget;
   const bufferTarget = rawBufferTarget == null ? null : finiteMoney(rawBufferTarget);
   if (rawBufferTarget != null && bufferTarget === null) return Response.json({ error: "Backup contains an invalid comfort buffer." }, { status: 400 });
   const budgetSource = (candidate.budgetOverridesByMonth || {}) as Record<string, unknown>;

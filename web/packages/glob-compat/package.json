@@ -1,0 +1,10 @@
+{
+  "name": "@finance-assistant/glob-compat",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.cjs",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "tinyglobby": "0.2.17"
+  }
+}

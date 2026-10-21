@@ -67,11 +67,19 @@ def to_app_state(ledger: dict, config: dict, month: str | None = None) -> dict:
     month = month or date.today().strftime("%Y-%m")
     if len(month) != 7 or date.fromisoformat(month + "-01").strftime("%Y-%m") != month:
         raise ValueError("Month must be YYYY-MM")
-    balances = sorted(ledger.get("balanceSnapshots", []), key=lambda row: row["date"])
     configured_balance = config.get("balance")
-    balance = {"date": balances[-1]["date"], "amount": balances[-1]["observed_balance"]} if balances else (
-        {"date": configured_balance["date"], "amount": configured_balance["amount"]} if configured_balance else None
+    bank_accounts = [row["id"] for row in config["accounts"] if row["type"] == "bank_account"]
+    # With multiple bank accounts, require an explicit selection rather than
+    # substituting whichever account happened to be imported most recently.
+    balance_account = configured_balance["accountId"] if configured_balance else (
+        bank_accounts[0] if len(bank_accounts) == 1 else None
     )
+    balances = [{"date": row["date"], "amount": row["observed_balance"]}
+                for row in ledger.get("balanceSnapshots", []) if row["account_id"] == balance_account]
+    if configured_balance:
+        balances.append({"date": configured_balance["date"], "amount": configured_balance["amount"]})
+    # An explicit configuration correction wins a tie on the observation date.
+    balance = sorted(balances, key=lambda row: row["date"])[-1] if balances else None
     incomes = [{"id": row["id"], "name": row["description"], "amount": row["amount"], "date": row["date"],
                 "paidDate": row["date"], "budgetMonth": row["date"][:7], "paid": True, "received": True,
                 "source": row["description"], "sourceRef": row.get("source", "Import"), "actualDate": row["date"]}

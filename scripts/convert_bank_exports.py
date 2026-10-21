@@ -114,7 +114,11 @@ def prepare_import(ledger: dict, config: dict, rows: list[dict], audit: dict, ac
     configured = config.get("balance")
     if configured:
         ident = "configured-balance-" + digest([configured["accountId"], configured["date"]])[:24]
-        if not any(item["id"] == ident for item in candidate["balanceSnapshots"]):
+        existing_balance = next((item for item in candidate["balanceSnapshots"] if item["id"] == ident), None)
+        if existing_balance:
+            if existing_balance["observed_balance"] != configured["amount"] or existing_balance["currency"] != config["currency"]:
+                existing_balance.update(observed_balance=configured["amount"], currency=config["currency"], updatedAt=utc_now())
+        else:
             now = utc_now()
             candidate["balanceSnapshots"].append({"id": ident, "fingerprint": ident, "account_id": configured["accountId"],
                 "date": configured["date"], "observed_balance": configured["amount"], "currency": config["currency"], "createdAt": now, "updatedAt": now})

@@ -16,9 +16,9 @@ REPORT = ROOT / "outputs/latest-integrity-report.json"
 
 def code_hash() -> str:
     sources = []
-    for folder in ["scripts", "harness/schemas", "web/app", "web/src", "web/db", "web/worker", "web/tests", "web/scripts", "web/drizzle"]:
+    for folder in ["scripts", "harness/schemas", "web/app", "web/src", "web/db", "web/worker", "web/tests", "web/scripts", "web/packages", "web/drizzle"]:
         for path in sorted((ROOT / folder).rglob("*")):
-            if path.is_file() and path.suffix in {".py", ".json", ".js", ".mjs", ".ts", ".tsx", ".jsx", ".css", ".sql"}:
+            if path.is_file() and path.suffix in {".py", ".json", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".css", ".sql"}:
                 sources.append((str(path.relative_to(ROOT)), file_hash(path)))
     for name in ["web/package.json", "web/package-lock.json", "web/vite.config.ts", "web/wrangler.jsonc", "web/tsconfig.json", "requirements-dev.txt"]:
         sources.append((name, file_hash(ROOT / name)))
