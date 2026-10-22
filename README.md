@@ -38,12 +38,31 @@ Open [the local dashboard](http://127.0.0.1:4310). Demo records are fabricated f
 
 ## Start your own household
 
-Use a separate fresh copy of the source for real data, then repeat the installation steps with `scripts/setup_local.py` instead of `--demo`. Edit the resulting ignored `config/household.json` before importing:
+Use a separate fresh copy of the source for real data. Create the Python environment and install its dependencies as above, then copy the household configuration **before running setup for the first time**:
+
+```bash
+mkdir -p config
+cp examples/household.example.json config/household.json
+```
+
+Edit the ignored `config/household.json` now:
 
 - Choose USD, EUR, GBP, or ILS as your single base currency.
 - Give each bank, card, or cash account a stable id.
 - Set category budgets, the protected buffer, and optional matching rules.
 - Supply an observed balance with its date and account id if you want balance-based estimates. Without one, treat the allowance as incomplete until you provide a balance.
+
+After saving the configuration, initialize the ledger and start the dashboard:
+
+```bash
+.venv/bin/python scripts/setup_local.py
+cd web
+npm ci
+npm run db:migrate:local
+npm run dev
+```
+
+Setup records the base currency in the ledger, even when it is empty. Keep it unchanged after initialization; choosing another currency requires a separate fresh workspace configured before setup. In a second terminal at the project root, follow the CSV preview/apply, integrity and local sync steps below.
 
 The configured balance account selects which account feeds the allowance. Only that account's observations are considered; a newer observation from another bank or card cannot replace it. With one bank account, its imported balances are selected automatically. With multiple bank accounts, configure `balance.accountId` explicitly. A corrected configured amount on the same date replaces the previous value; a newer observation for the selected account still takes precedence.
 
