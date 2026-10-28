@@ -1,21 +1,37 @@
 # Finance Assistant
 
-A local household dashboard and a Codex-guided workflow for importing bank exports, reconciling a durable ledger, and reviewing spending and budgets.
+Finance Assistant is an open-source app for reviewing household spending and budgets on your computer.
 
-The dashboard includes a daily spending allowance, category budgets, recurring commitments, income, transaction history, merchant reports, and local backups. Codex follows the instructions in `AGENTS.md`; the agent workflows are instructions, not an autonomous agent service.
+Import bank statement files, review transactions, and explore your income, expenses, recurring costs and category budgets. Start with the included demo data, then set up a separate workspace for your household.
 
-This first release runs on your computer. It needs no bank login, paid API key, Google Sheet, Sites account, or production credential. Imports use files you supply. The code is licensed under **GPL-3.0-only**; dependencies retain their own licenses.
+Transactions come from files you provide. The app does not connect directly to your bank. Each workspace supports one household and one base currency: USD, EUR, GBP or ILS.
 
-## Requirements
+## What you can do
+
+- Review spending, income and transaction history by month.
+- Plan category budgets and recurring costs.
+- See a daily spending allowance based on your recorded balance, income and spending plan.
+- Explore merchant reports and distinguish purchases, refunds and transfers.
+- Import CSV files with configurable columns and date formats. Some Israeli bank and credit-card XLSX layouts are also supported; see the [import guide](docs/IMPORTS.md).
+- Back up and restore dashboard settings, budgets and cash reports.
+
+## Download and requirements
+
+Open the [releases page](https://github.com/dv85/finance-assistant/releases), download the `finance-assistant-<version>-source.zip` file listed under **Assets**, and extract it.
+
+Open a terminal in the extracted folder containing this README and the `scripts/` directory. This is the **project root** used in the instructions below.
+
+You will need:
 
 - Python 3.12 with `venv` and `pip`.
 - Node.js 24 and npm.
-- macOS or Linux. Windows-specific paths exist in the integration test, but Windows has not been validated.
-- Codex is optional for running the app and useful for guided setup, mapping exports, and reviewing imports.
+- A terminal and a text editor for the household configuration file.
 
-## Start with synthetic demo data
+The commands below use macOS/Linux shell syntax. End-to-end setup has been validated on macOS; Linux and Windows remain unverified. This is a source release: you install its dependencies and start the app from the terminal.
 
-From the project root:
+## Try the demo
+
+The demo uses made-up transactions for the current month. In the project root, run:
 
 ```bash
 python3.12 -m venv .venv
@@ -27,30 +43,35 @@ npm run db:migrate:local
 npm run dev
 ```
 
-Keep that terminal running. In a second terminal, from the project root:
+Keep that terminal running. Once the server is ready, open a second terminal in the project root and run:
 
 ```bash
 .venv/bin/python scripts/run_integrity_harness.py
 .venv/bin/python scripts/sync_local_ledger.py
 ```
 
-Open [the local dashboard](http://127.0.0.1:4310). Demo records are fabricated for the current month. `--demo` refuses to replace any existing household configuration or ledger.
+These commands validate the records and load them into the dashboard. Open [http://127.0.0.1:4310](http://127.0.0.1:4310) to explore the demo.
 
-## Start your own household
+Demo setup refuses to replace an existing household configuration or ledger. Use a separate fresh copy of the source when you are ready to import your own records.
 
-Use a separate fresh copy of the source for real data. Create the Python environment and install its dependencies as above, then copy the household configuration **before running setup for the first time**:
+## Set up your household
+
+Extract a fresh copy of the source into a separate folder. In that folder's project root, create the Python environment and copy the example configuration:
 
 ```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
 mkdir -p config
 cp examples/household.example.json config/household.json
 ```
 
-Edit the ignored `config/household.json` now:
+**Edit `config/household.json` before running setup for the first time:**
 
-- Choose USD, EUR, GBP, or ILS as your single base currency.
-- Give each bank, card, or cash account a stable id.
-- Set category budgets, the protected buffer, and optional matching rules.
-- Supply an observed balance with its date and account id if you want balance-based estimates. Without one, treat the allowance as incomplete until you provide a balance.
+- Choose USD, EUR, GBP or ILS as the base currency. All imported amounts must use that currency; the app does not convert currencies.
+- Give each bank, card or cash account a stable ID. The import examples use `checking`; replace it with your configured account ID when necessary.
+- Set category budgets and the protected buffer: the amount you want to leave untouched.
+- Supply a confirmed account balance and its date to support balance-based spending estimates. Without a confirmed balance, treat the allowance as incomplete. If you have multiple bank accounts, set `balance.accountId` to the account used for these estimates.
+- Adjust the optional transaction-matching rules to suit your statement descriptions.
 
 After saving the configuration, initialize the ledger and start the dashboard:
 
@@ -62,17 +83,17 @@ npm run db:migrate:local
 npm run dev
 ```
 
-Setup records the base currency in the ledger, even when it is empty. Keep it unchanged after initialization; choosing another currency requires a separate fresh workspace configured before setup. In a second terminal at the project root, follow the CSV preview/apply, integrity and local sync steps below.
+Setup records the base currency in the ledger, even when it is empty. Keep it unchanged after initialization. To use another currency, create a separate fresh workspace and configure it before setup. Keep account IDs stable once you have imported transactions.
 
-The configured balance account selects which account feeds the allowance. Only that account's observations are considered; a newer observation from another bank or card cannot replace it. With one bank account, its imported balances are selected automatically. With multiple bank accounts, configure `balance.accountId` explicitly. A corrected configured amount on the same date replaces the previous value; a newer observation for the selected account still takes precedence.
+Leave the server running. In a second terminal at the project root, import your first statement using the steps below.
 
-Rules run in file order; the first matching `contains` rule supplies defaults for type, category, and readable merchant name. Explicit CSV type/category columns take priority. Account ids and base currency must remain stable once you have transactions. Currency changes do not convert money and are rejected for an existing ledger.
+## Import and review a CSV statement
 
-The CSV examples use fixed historical dates so they remain reproducible. Select their month in the dashboard; your own exports retain their actual dates.
+Place your CSV file at `Finance Imports/statement.csv`, or change `--input` in the commands below to its actual path.
 
-## Import CSV files
+Copy `examples/csv-mapping.example.json` to `config/csv-mapping.json`. Edit the mapping to match your file's column names, date format and amount conventions. The [import guide](docs/IMPORTS.md) explains mapping options, duplicate handling, installments and supported XLSX layouts.
 
-Copy `examples/csv-mapping.example.json` into your ignored `config/` folder and change the header names and conventions to match your file. See [the import guide](docs/IMPORTS.md) for debit/credit columns, installments, duplicate handling, and supported XLSX layouts.
+First, preview the import. This does not apply transactions to the ledger:
 
 ```bash
 .venv/bin/python scripts/convert_bank_exports.py \
@@ -80,7 +101,9 @@ Copy `examples/csv-mapping.example.json` into your ignored `config/` folder and 
   --mapping config/csv-mapping.json --account checking
 ```
 
-Read `outputs/latest-import-preview.json`. Review types, categories, amounts, account assignments, warnings, and every error. In particular, distinguish card statement payments and transfers from spending. Then repeat the same command with `--apply`:
+Open `outputs/latest-import-preview.json`. Review the account, dates, amounts, transaction types, categories and duplicate counts. Resolve errors and review every warning. Check that transfers and card statement payments are not counted as spending, and that refunds have the correct type.
+
+Once you have reviewed a successful preview, apply it, validate the ledger and update the dashboard:
 
 ```bash
 .venv/bin/python scripts/convert_bank_exports.py \
@@ -90,32 +113,43 @@ Read `outputs/latest-import-preview.json`. Review types, categories, amounts, ac
 .venv/bin/python scripts/sync_local_ledger.py
 ```
 
-An import is complete only after the local snapshot has activated, its hash and totals have been verified, and the imported period is visible in the dashboard. A changed source, mapping, configuration, code, or ledger invalidates its preview or integrity report.
+The sync command loads the validated records into the local dashboard and verifies their source hash, counts and totals. After it succeeds, open the dashboard and select the imported month to confirm your transactions are visible. An import is complete only after validation, sync and this final check all succeed.
 
-## Use with Codex
+Run a new preview after changing the input files, mapping or household configuration. A changed source, configuration, application code or ledger invalidates the previous preview or integrity report.
 
-Open this project folder in Codex. Start with a request such as:
+The included example CSV uses April 2025 dates. Select **April 2025** in the dashboard when trying that file; the demo generated by `--demo` uses the current month.
+
+## Privacy and backups
+
+The supported app runs on your computer at a local address. Keep the development server private to that computer; do not expose it through a tunnel or shared network. Hosted deployment is not covered by the local setup instructions.
+
+Your configuration, ledger, statement files and local database contain private financial information. The app does not encrypt these files. Use your operating system's access controls and disk encryption, and keep private records out of public repositories, issues and screenshots.
+
+Use **Settings → Data & backup** to export or restore dashboard settings, budgets and cash reports. Restore requires a complete supported backup exported by the app.
+
+Dashboard backups do not replace backups of your financial records. Keep separate private backups of:
+
+- `memory/`: your primary transaction ledger.
+- `config/`: household settings and import mappings.
+- Your original bank statement files, including those in `Finance Imports/`.
+
+The `web/.wrangler/` directory holds the local database, including dashboard edits, and must also stay private. Do not publish or share the whole working folder after adding household data.
+
+## Optional assistance with Codex
+
+Codex can help configure a household, map statement columns and review import results. It is optional; the commands above can be run directly.
+
+Open the project folder in Codex and start with a request such as:
 
 > Help me set up my household using these local bank files. Inspect the headers, propose the CSV mapping, preview the import, and show me the review findings before applying it.
 
-Codex must follow `AGENTS.md`. Reusable procedures live in [the workflow guide](harness/README.md). No Basecamp, Drive, Sites, or other connected account is required. Connecting or publishing to another service is a separate choice.
+Project instructions for assistants are in [AGENTS.md](AGENTS.md). The [workflow guide](harness/README.md) describes import review, reconciliation and monthly close procedures.
 
-## Data and architecture
+## Development and contributions
 
-- `memory/ledger.json` is the durable local source of truth.
-- `outputs/latest-import.json` is its derived dashboard state.
-- Python handles parsing, preview/apply, validation, and snapshot construction.
-- `web/` contains React on Vinext and a local Cloudflare D1 serving database.
-- Snapshot imports use start/chunk/commit and reconcile counts and amounts before activation. A failed staging import leaves the previous active snapshot available.
-- Dashboard edits to budgets, settings, and cash reports are stored separately in D1 and survive ledger refreshes.
+Python handles statement imports, ledger validation and dashboard data preparation. The web app uses React on Vinext with a local Cloudflare D1 database. The primary ledger is `memory/ledger.json`; `outputs/latest-import.json` is its derived dashboard data. Dashboard edits are stored separately in the local database and survive ledger refreshes.
 
-The local server binds to loopback. The local owner identity is enabled only by `npm run dev`; production builds fail closed. Do not expose the development server through a tunnel or shared network. Files and the local database are not encrypted by this app; use your operating system's access controls and disk encryption.
-
-Use Settings → Data & backup to export or restore dashboard edits. This does not replace the ledger. Keep separate private backups of `memory/`, `config/`, and your source files as well. The `web/.wrangler/` directory contains the local serving database and must stay private.
-
-Restore accepts complete `cashflow-repair-shared-state/v5` exports. Unsupported versions, unrelated JSON, and missing sections are rejected before changing dashboard data.
-
-## Validation
+After setting up a demo or household, run the validation commands from the project root:
 
 ```bash
 .venv/bin/python -m unittest discover -s scripts -p 'test_*.py'
@@ -127,16 +161,12 @@ cd ..
 .venv/bin/python scripts/run_integrity_harness.py --full
 ```
 
-Tests use synthetic fixtures and temporary folders. The integrity command also validates your private local ledger and writes an ignored report. Build output is for validation; the supported local entry point is `npm run dev`.
+Tests use made-up fixtures and temporary folders. The integrity command also validates the workspace's ledger and writes a report under the private `outputs/` folder. The production build is checked during validation; start the supported local app with `npm run dev`.
 
-## Release boundaries
+See [contributing](CONTRIBUTING.md) for development guidelines and [security reporting](SECURITY.md) for reporting vulnerabilities. [Hosting notes](docs/HOSTING.md) describe the additional work needed to adapt the app for private hosting; hosted deployment remains unverified.
 
-This is a single-household, single-base-currency local release. It does not provide bank connectivity, automatic FX, a hosted authentication provider, or multi-household SaaS. Existing Israeli XLSX layouts have synthetic regression tests; other layouts should use an explicit CSV mapping or a new parser.
+Source archives must be created with `scripts/package_release.py`, which exports only the reviewed `PUBLIC_FILES.json` allowlist and excludes private runtime data.
 
-[Optional hosting notes](docs/HOSTING.md) describe the boundary for adapting it to a private site. Hosted deployment is not a verified one-command feature of this release.
+## License
 
-To create a source archive, use `scripts/package_release.py`. It exports only the reviewed `PUBLIC_FILES.json` allowlist. Never publish the whole working folder after adding household data.
-
-## License and contributions
-
-Project code: [GNU General Public License version 3 only](LICENSE), SPDX `GPL-3.0-only`. See [third-party notices](THIRD_PARTY_NOTICES.md), [contributing](CONTRIBUTING.md), and [security reporting](SECURITY.md).
+Project code is licensed under the [GNU General Public License version 3 only](LICENSE), SPDX `GPL-3.0-only`. Dependencies retain their own licenses; see [third-party notices](THIRD_PARTY_NOTICES.md).
