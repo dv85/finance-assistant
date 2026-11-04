@@ -256,7 +256,7 @@ function Sidebar({ view, user }) {
     <aside className="sidebar" aria-label="App navigation">
       <a className="brand" href="#today"><BrandMark /><span><strong>Cashflow Repair</strong><em>Personal</em></span></a>
       <nav className="nav-list" aria-label="Primary">
-        {NAV.map(([key, label, icon]) => <a className={`nav-link ${view === key ? "active" : ""}`} href={`#${key}`} data-view={key} key={key}><span className="icon"><Icon name={icon} /></span>{label}</a>)}
+        {NAV.map(([key, label, icon]) => <a className={`nav-link ${view === key ? "active" : ""}`} href={`#${key}`} data-view={key} aria-current={view === key ? "page" : undefined} key={key}><span className="icon"><Icon name={icon} /></span>{label}</a>)}
       </nav>
       <div className="sidebar-spacer" />
       <section className="sidebar-note"><span className="icon"><Icon name="help" /></span><div><strong>Private account</strong><a href="#activity">Ledger and budget data</a></div></section>

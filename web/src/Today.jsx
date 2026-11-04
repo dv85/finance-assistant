@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, Warning } from "@phosphor-icons/react";
 import { CURRENCY, formatMonth, money, monthShortDayFromDate } from "./lib/finance.js";
 import { categoryReservations, localCalendarDate, validateAllowanceDraft } from "./lib/allowance.js";
 import { saveBudgetPlan } from "./lib/dataSource.js";
@@ -21,6 +22,7 @@ export default function Today({ screen, month, onMonth, onPreview, onSharedState
   const active = screen.isActiveMonth;
   const future = !active && month > localCalendarDate().slice(0, 7);
   const stale = active && (summary.latestBalanceAge > 3 || !summary.hasObservedBalance);
+  const needsAttention = active && (stale || summary.safeSpendPool <= 0);
   const planHref = `#settings?panel=budgets&month=${month}`;
   const activityHref = `#activity?month=${month}&basis=billing`;
   const reason = summary.cashPool <= summary.budgetPool ? "Cash coverage" : "Your flexible budget";
@@ -36,38 +38,37 @@ export default function Today({ screen, month, onMonth, onPreview, onSharedState
 
   return <section className="view active today-page" data-screen="today">
     <header className="screen-header today-page-heading"><div><h1>Today</h1><p>{active ? `As of ${new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date())}` : `${formatMonth(month)} · ${future ? "Planned month" : "Month ended"}`}</p></div><label className="month-select"><select aria-label="Month selector" value={month} onChange={event => onMonth(event.target.value)}>{screen.availableMonths.map(value => <option key={value} value={value}>{formatMonth(value)}</option>)}</select></label></header>
-    <section className="panel allowance-result" aria-labelledby="allowance-title">
-      <div className="allowance-result-top"><div><h2 id="allowance-title">{active ? stale ? "Estimated daily spending" : "Suggested daily spending" : future ? "Monthly plan" : "Month summary"}</h2>{active && <><div className="allowance-amount">{dailyMoney(summary.safeDailySpend)} <span>/ day</span></div><p><strong>{summary.safeSpendPoolLabel}</strong> available through month-end · {summary.remainingDays} days including today</p></>}</div>{active ? <button ref={setupButton} className="primary-btn" type="button" onClick={event => open(0, event)}>Set up spending allowance</button> : <a className="secondary-btn" href={planHref}>Review month plan</a>}</div>
+    <section className={`panel allowance-result${needsAttention ? " needs-attention" : ""}`} aria-labelledby="allowance-title">
+      <div className="allowance-result-top"><div className="allowance-headline">{needsAttention && <Warning className="allowance-status-icon" size={28} aria-hidden="true" />}<div><h2 id="allowance-title">{active ? stale ? "Estimated daily spending" : "Suggested daily spending" : future ? "Monthly plan" : "Month summary"}</h2>{active && <><div className="allowance-amount">{dailyMoney(summary.safeDailySpend)} <span>/ day</span></div><p><strong>{summary.safeSpendPoolLabel}</strong> available through month-end · {summary.remainingDays} days including today</p></>}</div></div>{active ? <button ref={setupButton} className="primary-btn" type="button" onClick={event => open(0, event)}>Set up spending allowance</button> : <a className="secondary-btn" href={planHref}>Review month plan</a>}</div>
       <p className={stale || active && summary.safeSpendPool <= 0 ? "allowance-warning" : "soft-copy"}>{description}</p>
       {active && <small>A daily pace for the remaining days, recalculated from recorded spending. It is not a separate amount left to spend today. · {summary.hasObservedBalance ? `Bank balance dated ${dateLabel(summary.balanceAsOf)}` : "Opening balance fallback"}</small>}
     </section>
     {setupStep !== null && <AllowanceSetup screen={screen} month={month} initialStep={setupStep} onPreview={onPreview} onSharedState={onSharedState} onClose={close} onSaved={() => { setMessage("Monthly budget and comfort buffer saved. Your allowance and totals have been recalculated."); close(); }} />}
-    <div hidden={setupStep !== null}>
+    <div className="today-dashboard" hidden={setupStep !== null}>
       <section className="today-month-overview" aria-labelledby="today-month-title"><h2 id="today-month-title">{formatMonth(month).split(" ")[0]} at a glance</h2><div className="today-month-metrics">
-        <article><span>Income for the month</span><strong>{summary.incomeThisMonthLabel}</strong><small>{active ? `${summary.upcomingIncomeLabel} upcoming cash income` : "Loaded monthly income"}</small><a className="text-link" href={`#income?month=${month}`}>Review income</a></article>
-        <article><span>Spent this month</span><strong>{summary.spentThisMonthLabel}</strong><small>Recorded cash / billing expenses · {summary.spentIncomeRatio}</small><a className="text-link" href={activityHref}>Review spending</a></article>
-        <article><span>{summary.totalCashBudgetRemaining < 0 ? "Over total budget" : "Total budget remaining"}</span><strong>{money(Math.abs(summary.totalCashBudgetRemaining))}</strong><small>Of {money(summary.totalBudgetGoal)} planned · Includes commitments</small><a className="text-link" href={`#budget?month=${month}`}>Review budget</a></article>
+        <article><span>Income for the month</span><strong>{summary.incomeThisMonthLabel}</strong><small>{active ? `${summary.upcomingIncomeLabel} upcoming cash income` : "Loaded monthly income"}</small><a className="text-link" href={`#income?month=${month}`}>Review income <ArrowRight size={15} aria-hidden="true" /></a></article>
+        <article><span>Spent this month</span><strong>{summary.spentThisMonthLabel}</strong><small>Recorded cash / billing expenses · {summary.spentIncomeRatio}</small><a className="text-link" href={activityHref}>Review spending <ArrowRight size={15} aria-hidden="true" /></a></article>
+        <article><span>{summary.totalCashBudgetRemaining < 0 ? "Over total budget" : "Total budget remaining"}</span><strong className={summary.totalCashBudgetRemaining < 0 ? "is-negative" : undefined}>{money(Math.abs(summary.totalCashBudgetRemaining))}</strong><small>Of {money(summary.totalBudgetGoal)} planned · Includes commitments</small><a className="text-link" href={`#budget?month=${month}`}>Review budget <ArrowRight size={15} aria-hidden="true" /></a></article>
         <article><span>{active ? "Estimated closing balance" : future ? "Balance estimate unavailable" : "Closing balance"}</span><strong>{future || (!active && !summary.hasClosingBalance) ? "—" : summary.projectedEndBalanceLabel}</strong><small>{active ? "After using the available allowance" : future ? "Current-month forecast only" : summary.hasClosingBalance ? "From loaded monthly status" : "No month-end balance imported"}</small></article>
       </div></section>
-      {active && <section className="today-calculation" aria-labelledby="today-calculation-title"><h2 id="today-calculation-title">Where this amount comes from</h2><p className="soft-copy">Two checks. The lower amount determines your allowance.</p><div className="allowance-equations">
+      {active && <div className="today-insights"><BalanceEstimate summary={summary} /><section className="today-calculation" aria-labelledby="today-calculation-title"><h2 id="today-calculation-title">Where this amount comes from</h2><p className="soft-copy">Two checks. The lower amount determines your allowance.</p><div className="allowance-equations">
         <div><h3>Cash coverage</h3><dl>
-          <CalculationRow label="Bank balance" value={summary.currentBankBalanceLabel} detail={`${summary.hasObservedBalance ? "Imported" : "Opening balance fallback"} · ${dateLabel(summary.balanceAsOf)}`} action="Review source" onClick={event => open(0, event)} />
-          <CalculationRow label="+ Upcoming income" value={summary.upcomingIncomeLabel} detail={`${summary.upcomingIncomeCount} records after the balance date`} action="Review income" href={`#income?month=${month}`} />
-          <CalculationRow label="− Remaining commitments" value={summary.remainingCommittedCostsLabel} detail="Required expenses remaining in your plan" action="Edit commitments" onClick={event => open(1, event)} />
-          <CalculationRow label="− Protected buffer" value={summary.bufferTargetLabel} detail="Chosen by your household" action="Change buffer" onClick={event => open(2, event)} />
+          <CalculationRow label="Bank balance" value={summary.currentBankBalanceLabel} detail={`${summary.hasObservedBalance ? "Imported" : "Opening balance fallback"} · ${dateLabel(summary.balanceAsOf)}`} />
+          {summary.upcomingIncomeCount > 0 && <CalculationRow label="+ Upcoming income" value={summary.upcomingIncomeLabel} detail={`${summary.upcomingIncomeCount} records after the balance date`} />}
+          <CalculationRow label="− Remaining commitments" value={summary.remainingCommittedCostsLabel} detail="Required expenses remaining in your plan" />
+          <CalculationRow label="− Protected buffer" value={summary.bufferTargetLabel} detail="Chosen by your household" />
           <CalculationRow label="Cash available" value={summary.cashPoolLabel} total />
-        </dl></div>
-        <div><h3>Flexible spending plan</h3><dl>
+        </dl><div className="today-coverage-actions"><button className="text-link" type="button" onClick={event => open(0, event)}>Review source</button><button className="text-link" type="button" onClick={event => open(1, event)}>Edit commitments</button><button className="text-link" type="button" onClick={event => open(2, event)}>Change buffer</button></div></div>
+        <details className="today-flexible-details"><summary>Flexible spending plan</summary><dl>
           <CalculationRow label="Monthly flexible budget" value={summary.flexibleGoalLabel} detail="From this month's category and cost plan" action="Edit flexible budget" onClick={event => open(1, event)} />
           <CalculationRow label="− Flexible spending recorded" value={summary.flexibleSpentLabel} detail="Cash / billing dates" action="Review spending" href={activityHref} />
           <CalculationRow label="− Committed costs over plan" value={summary.committedOverageLabel} detail="Overruns reduce the allowance" action="Review committed costs" href={planHref} />
           <CalculationRow label="Budget available" value={summary.budgetPoolLabel} total />
-        </dl></div>
-      </div><p className="allowance-connector">Lower amount, with a minimum of zero</p><div className="allowance-calculation-result">{summary.safeSpendPoolLabel} ÷ {summary.remainingDays} remaining days = <strong>{dailyMoney(summary.safeDailySpend)} / day</strong></div></section>}
+        </dl></details>
+      </div><p className="allowance-connector">Lower amount, with a minimum of zero</p><div className="allowance-calculation-result">{summary.safeSpendPoolLabel} ÷ {summary.remainingDays} remaining days = <strong>{dailyMoney(summary.safeDailySpend)} / day</strong></div></section></div>}
       <p className="today-save-message" role="status">{message}</p>
       {active && <section className="today-next-step"><h2>Your next step</h2><p>{stale ? "Review the date and source of your bank balance, then update the imported data." : summary.cashPool <= 0 ? "Review required expenses and your buffer to understand the cash shortfall." : summary.flexibleGoal <= 0 ? "Choose amounts for the flexible categories in your plan." : summary.budgetPool <= 0 ? "Review recorded spending before revising your exhausted flexible budget." : "Review the flexible categories behind your remaining allowance."}</p><button className="secondary-btn" onClick={event => open(stale ? 0 : 1, event)}>{stale ? "Review imported data" : "Review spending plan"}</button></section>}
       {active && <div className="today-supporting"><section><h3>Recorded spending</h3><dl><CalculationRow label="Today" value={summary.flexibleSpentTodayLabel} /><CalculationRow label="Since Monday" value={summary.flexibleSpentThisWeekLabel} /></dl><small>Flexible expenses by cash / billing date. These can differ from purchases made today.</small></section><section><h3>What remains to cover</h3><dl><CalculationRow label="Required expenses" value={summary.remainingCommittedCostsLabel} /><CalculationRow label="Flexible spending allowance" value={summary.safeSpendPoolLabel} /></dl><small>Total budget remaining includes required expenses. Only the allowance above is available for flexible spending.</small></section></div>}
-      {active && <BalanceEstimate summary={summary} />}
       {screen.unbudgetedItems[0] && <a className="text-link today-unplanned" href={`#activity?month=${month}&category=${encodeURIComponent(screen.unbudgetedItems[0].category)}`}>Review unbudgeted {screen.unbudgetedItems[0].category}: {screen.unbudgetedItems[0].actualLabel}</a>}
     </div>
   </section>;
@@ -118,8 +119,14 @@ function AllowanceSetup({ screen, month, initialStep, onPreview, onSharedState, 
 function BalanceEstimate({ summary }) {
   const ref = useRef(null);
   const [width, setWidth] = useState(600);
+  const [axisLabelWidth, setAxisLabelWidth] = useState(64);
   useEffect(() => { const observer = new ResizeObserver(entries => setWidth(Math.max(240, entries[0].contentRect.width))); observer.observe(ref.current); return () => observer.disconnect(); }, []);
-  const height = 190, left = 70, right = 22, top = 18, bottom = 35;
+  useEffect(() => {
+    const labels = ref.current?.querySelectorAll("[data-axis-label]");
+    if (labels?.length) setAxisLabelWidth(Math.ceil(Math.max(...Array.from(labels, label => label.getComputedTextLength()))));
+  }, [width, summary.currentBankBalance, summary.projectedEndBalance, summary.bufferTarget, CURRENCY]);
+  const compact = width < 460;
+  const height = 230, left = Math.max(74, axisLabelWidth + 16), right = compact ? 16 : 100, top = 22, bottom = 36;
   const values = [summary.currentBankBalance, summary.projectedEndBalance, summary.bufferTarget];
   const max = Math.max(1, ...values), min = Math.min(0, ...values);
   const y = value => top + (max - value) / (max - min || 1) * (height - top - bottom);
@@ -127,9 +134,12 @@ function BalanceEstimate({ summary }) {
   const now = new Date();
   const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const shortDate = date => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(date);
-  return <section className="today-balance-estimate" ref={ref}><h2>How the month could end</h2><div className="legend"><span><i className="line projected" />Balance after using the allowance</span><span><i className="line baseline" />Protected buffer · {summary.bufferTargetLabel}</span></div><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Month-end estimate: ${summary.currentBankBalanceLabel} today to ${summary.projectedEndBalanceLabel} at month-end; protected buffer ${summary.bufferTargetLabel}. Payment dates are not modeled.`}>
-    {[min, (max + min) / 2, max].map((value, index) => <g key={index}><line className="forecast-grid" x1={left} x2={end} y1={y(value)} y2={y(value)} /><text className="forecast-label" x={left - 10} y={y(value) + 4} textAnchor="end">{money(value)}</text></g>)}
+  return <section className="today-balance-estimate" ref={ref}><h2>How the month could end</h2><p className="soft-copy">Month-end estimate from the loaded balance. Assumes upcoming income arrives and you spend the available allowance. The straight line does not model payment dates.</p><div className="legend"><span><i className="line projected" />Balance after using the allowance</span><span><i className="line baseline" />Protected buffer · {summary.bufferTargetLabel}</span></div><svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Month-end estimate: ${summary.currentBankBalanceLabel} today to ${summary.projectedEndBalanceLabel} at month-end; protected buffer ${summary.bufferTargetLabel}. Payment dates are not modeled.`}>
+    {[min, (max + min) / 2, max].map((value, index) => <g key={index}><line className="forecast-grid" x1={left} x2={end} y1={y(value)} y2={y(value)} /><text className="forecast-label" data-axis-label x={left - 10} y={y(value) + 4} textAnchor="end">{money(value)}</text></g>)}
     <line className="forecast-baseline" x1={left} x2={end} y1={y(summary.bufferTarget)} y2={y(summary.bufferTarget)} /><line className="forecast-projected" x1={left} x2={end} y1={y(summary.currentBankBalance)} y2={y(summary.projectedEndBalance)} />
+    <circle className="forecast-point" cx={end} cy={y(summary.projectedEndBalance)} r="4" />
+    <text className="forecast-end-value" x={compact ? end - 8 : end + 10} y={y(summary.projectedEndBalance) - 12} textAnchor={compact ? "end" : "start"}>{summary.projectedEndBalanceLabel}</text>
+    {summary.projectedEndBalance < summary.bufferTarget && <text className="forecast-label" x={compact ? end - 8 : end + 10} y={y(summary.projectedEndBalance) + 4} textAnchor={compact ? "end" : "start"}>Cash shortfall</text>}
     <text className="forecast-label" x={left} y={height - 8}>{shortDate(now)}</text><text className="forecast-label" x={end} y={height - 8} textAnchor="end">{shortDate(last)}</text>
-  </svg><p className="soft-copy">Month-end estimate from the loaded balance. Assumes upcoming income arrives and you spend the available allowance. The straight line does not model payment dates.</p></section>;
+  </svg><small>Projected balance after using the available allowance.</small></section>;
 }

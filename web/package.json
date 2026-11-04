@@ -1,6 +1,6 @@
 {
   "name": "finance-assistant",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": true,
   "engines": {
     "node": ">=24 <25"
@@ -38,6 +38,7 @@
   "overrides": {
     "fast-glob": "$fast-glob",
     "fast-uri": "3.1.9",
-    "fflate": "0.7.5"
+    "fflate": "0.7.5",
+    "undici": "7.30.1"
   }
 }

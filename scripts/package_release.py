@@ -14,7 +14,7 @@ from public_release import audit
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=ROOT / "release/finance-assistant-0.1.0-source.zip")
+    parser.add_argument("--output", type=Path, default=ROOT / "release/finance-assistant-0.1.2-source.zip")
     args = parser.parse_args()
     files, findings = audit()
     if findings:
