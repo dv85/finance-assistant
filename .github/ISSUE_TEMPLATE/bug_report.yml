@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a reproducible problem using synthetic data.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic data only. Never attach real statements, account identifiers,
+        ledgers, access tokens, credentials, or private screenshots. Share a small
+        fabricated reproduction and sanitized error text.
+        For vulnerabilities, follow [SECURITY.md](https://github.com/dv85/finance-assistant/blob/main/SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: Release or commit
+      placeholder: "Example: v0.1.2 or the commit hash"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include operating system, architecture, Python version, and Node.js version.
+      placeholder: |
+        OS and architecture:
+        Python version:
+        Node.js version:
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Describe the smallest reproduction with fabricated inputs.
+      placeholder: |
+        1. Start with a fresh synthetic demo workspace.
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Sanitized error text
+      description: Optional. Include only the relevant text with personal paths and identifiers removed.
+      render: text
+    validations:
+      required: false

@@ -4,6 +4,8 @@ Use Python 3.12 and Node 24 and follow the README setup instructions. Project co
 
 Use synthetic fixtures. Never attach real statements, household ledgers, account identifiers, private screenshots, access tokens, or raw debug logs containing personal data to an issue or pull request.
 
+Use the [bug report form](https://github.com/dv85/finance-assistant/issues/new?template=bug_report.yml) for reproducible problems, or the [demo feedback form](https://github.com/dv85/finance-assistant/issues/new?template=demo_feedback.yml) for confusing setup steps and screens. Describe a fabricated example and include only sanitized error text. Your GitHub username is sufficient contact information. Follow [SECURITY.md](SECURITY.md) for vulnerabilities.
+
 For accounting or import changes, add a regression case that checks the financial invariant and explain the expected before/after behavior. Run the Python tests, `npm test`, `npm run typecheck`, and `npm run build`. For release work, use a synthetic initialized household and run `scripts/run_integrity_harness.py --full` plus the local sync workflow.
 
 Keep data parsing separate from writes. Preserve preview/apply freshness checks, deterministic identities, explicit installment timing, and staged snapshot reconciliation. Document new formats and configuration changes.
