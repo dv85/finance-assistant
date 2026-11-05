@@ -29,6 +29,14 @@ You will need:
 
 The commands below use macOS/Linux shell syntax. End-to-end setup has been validated on macOS; Linux and Windows remain unverified. This is a source release: you install its dependencies and start the app from the terminal.
 
+Before installing dependencies or running either setup below, check the prerequisites from the project root:
+
+```bash
+python3.12 -B scripts/check_environment.py
+```
+
+On Windows, use `py -3.12 -B scripts/check_environment.py`. The checker requires the running Python interpreter to be exactly 3.12 and Node to be major 24 (patch releases are allowed). It checks npm presence on PATH without executing npm or loading its configuration. It uses only the Python standard library, limits the local Node version query to 10 seconds, and does not install anything, initialize a household, or open financial files or credentials. Exit code 0 means the prerequisites match; a nonzero exit code reports problems to resolve before setup. Passing does not validate npm execution, dependency installation, the app, or Linux/Windows end-to-end support.
+
 ## Try the demo
 
 The demo uses made-up transactions for the current month. In the project root, run:
